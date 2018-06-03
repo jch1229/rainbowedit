@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>彩虹雨</title>
+<style>
+    canvas {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        position: fixed;
+        width: 100%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: auto;
+        z-index: -1;
+    }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    let canvas = document.querySelector("canvas");
+     let API = canvas.getContext("2d");
+     let colors = "#FFE74C #FF5964 #35A7FF #FFFFFF #011627 #004E64 #00A5CF #9FFFCB #25A18E #E4572E #F3A712 #A8C686 #3D348B #7678ED #F7B801 #F18701 #00C9B1 #005D6C #00043C #AAAAAA #BBBBBB #FFEBB7 #BFF4ED #280F34 #B30753".split(" ");
+     let ball = [];
+     let width = canvas.width = window.innerWidth + 100;
+     let height = canvas.height = window.innerHeight + 50;
+     let cRect = canvas.getBoundingClientRect();
+ window.addEventListener("mousemove", function(e) {
+    e.preventDefault();
+	cRect = canvas.getBoundingClientRect();
+	let mouseX = e.clientX;
+	let mouseY = e.clientY;
+	
+	let posX = (mouseX - cRect.left)*(canvas.width/cRect.width);
+	let posY = (mouseY - cRect.top)*(canvas.height/cRect.height);
+	
+	let b2 = new Ball(posX, posY, Math.random() * 5, Math.random() * 5, colors[Math.floor(Math.random() * colors.length)], Math.floor(Math.random() * 10));
+     ball.push(b2);
+ });
+ window.addEventListener("resize", function(a) {
+     canvas.width = width;
+     canvas.height = height;
+ });
+ class Ball {
+	constructor(x, y, velX, velY, color, size) {
+		this.x = x;
+		this.y = y;
+		this.velX = velX;
+		this.velY = velY;
+		this.color = color;
+		this.size = size || 5;
+	}
+	draw() {
+		API.beginPath();
+  	API.fillStyle = this.color;
+  	API.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+  	API.fill();
+	}
+	update() {
+		if (this.x > width || this.x < 0) {
+			this.velX = -(this.velX)
+		}
+		if ((this.y ) > height || this.y < 0) {
+			this.velY = -(this.velY)
+		}
+		this.x += this.velX;
+		this.y += this.velY;
+	}
+}
+for (let i = 0; i < 10; i++) {
+	let newball = new Ball(Math.random() * width, Math.random() * height, Math.random() * 5, Math.random() * 5, colors[Math.floor(Math.random() * colors.length)], Math.floor(Math.random() * 5))
+	ball.push(newball);
+}
+function run() {
+	requestAnimationFrame(run);
+	API.globalAlpha = .8;
+	API.fillStyle = '#FFF';
+	API.fillRect(0, 0, width, height);
+	let length = ball.length;
+	if(length>140){
+		ball.shift();
+	}
+	for (let i = 0; i < ball.length; i++) {
+		let b = ball[i];
+		b.update();
+		b.draw();
+	}
+}
+run();
+</script>
+</body>
+</html>
